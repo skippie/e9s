@@ -84,6 +84,8 @@ private
 
   E9S_OPTIONS = [:count, :pluralize, :capitalize, :translate_callback]
   LOGGER_PROC = Proc.new{|translation, key, options| puts "INFO: I18n.t #{key.inspect}, #{options.inspect}"}
+  
+  @@i18n_translations = {}
 
   def i18n_t(key, opts = {})
     options = opts.inject({}) do |hash, (k, v)|
@@ -91,7 +93,9 @@ private
                 hash
               end
     
-    translation = I18n.t(key, options).dup
+    k = "#{key.inspect}, #{options.inspect}"
+    translation = (@@i18n_translations[k] ||= I18n.t(key, options))
+
     opts[:translate_callback].try :call, translation, key, options
     
     translation
